@@ -1,136 +1,164 @@
-Wallet API Documentation
-Author: Sofia Cordoba
-Date: September 2024
-Version: 1.0
+# Wallet API Documentation
 
-Table of Contents
-Introduction
-Project Structure
-Requirements
-Design Patterns
-Data Flow
-API Endpoints
-  Create Wallet
-  List Wallets
-  Transfer
-  Get Transactions
-Validations
-Unit and Integration Tests
-  Test Coverage
-Technologies Used
-Future Improvements
-1. Introduction 
+**Author:** Sofia Cordoba  
+**Date:** September 2024  
+**Version:** 1.0  
+
+## Table of Contents
+
+1. [Introduction](#introduction)
+2. [Project Structure](#project-structure)
+3. [Requirements](#requirements)
+4. [Design Patterns](#design-patterns)
+5. [Data Flow](#data-flow)
+6. [API Endpoints](#api-endpoints)
+    - Create Wallet
+    - List Wallets
+    - Transfer
+    - Get Transactions
+7. [Validations](#validations)
+8. [Unit and Integration Tests](#unit-and-integration-tests)
+9. [Test Coverage](#test-coverage)
+10. [Technologies Used](#technologies-used)
+11. [Future Improvements](#future-improvements)
+
+---
+
+## 1. Introduction
+
 This project is a Wallet API that allows account management and wallet-to-wallet transactions. It provides endpoints to create accounts, list wallets with optional filters, process transfers with validation, and retrieve transaction histories. The implementation adheres to Clean Architecture principles, ensuring maintainability, modularity, and robust automated testing.
 
-2. Project Structure 
+---
+
+## 2. Project Structure
+
 The project is structured into multiple layers to maintain separation of concerns and allow scalability:
 
 /Kata.Wallet.Api
-    - Controllers (WalletController.cs, TransactionController.cs)
-    - Program.cs
+- Controllers (WalletController.cs, TransactionController.cs)
+- Program.cs
+
 /Kata.Wallet.Services
-    - Interfaces (IWalletService.cs, ITransactionService.cs)
-    - Implementations (WalletService.cs, TransactionService.cs)
+- Interfaces (IWalletService.cs, ITransactionService.cs)
+- Implementations (WalletService.cs, TransactionService.cs)
+
 /Kata.Wallet.Domain
-    - Entities (Wallet.cs, Transaction.cs)
+- Entities (Wallet.cs, Transaction.cs)
+
 /Kata.Wallet.Persistence
-    - Repositories (WalletRepository.cs, TransactionRepository.cs)
+- Repositories (WalletRepository.cs, TransactionRepository.cs)
+
 /Kata.Wallet.Tests
-    - Unit and Integration Tests
-Each layer has a specific responsibility and is decoupled from the others to promote scalability and easy maintenance.
+- Unit and Integration Tests
+  Each layer has a specific responsibility and is decoupled from the others to promote scalability and easy maintenance.
 
-3. Requirements 
-Framework: .NET Core 6.0
-ORM: Entity Framework Core (with in-memory database for testing)
-Language: C#
-Testing Framework: xUnit
-Additional Tools: AutoMapper, Swagger, InMemoryDatabase
+---
 
-5. Design Patterns 
-The following design patterns were used in the project:
-  Repository Pattern: Used to handle data access operations for the Wallet and Transaction entities.
-  Dependency Injection: Injecting services and repositories into controllers and services.
-  DTO (Data Transfer Objects): Used to decouple domain entities from the API responses.
-  Custom Validation: Implemented custom validations using attributes, e.g., CurrencyValidation.
+## 3. Requirements
 
-6. Data Flow 
-The data flow in the API follows this sequence:
-The client sends an HTTP request to an API endpoint.
-The controller processes the request and delegates business logic to the appropriate service.
-The service interacts with repositories to access the in-memory database (for testing) and perform required operations.
-The result of the operation (e.g., account creation, transfer, transaction retrieval) is returned to the controller.
-The controller sends back an HTTP response with the operation result.
-This architecture ensures clear separation of concerns, enhancing scalability and maintainability.
+- **Framework:** .NET Core 6.0  
+- **ORM:** Entity Framework Core (with in-memory database for testing)  
+- **Language:** C#  
+- **Testing Framework:** xUnit  
+- **Additional Tools:** AutoMapper, Swagger, InMemoryDatabase  
 
-7. API Endpoints 
-6.1 Create Wallet (POST /api/wallet)
-Description: Creates a new wallet account.
-Request Body:
-{
-  "userDocument": "12345678",
-  "userName": "John Doe",
-  "currency": "USD",
-  "balance": 100.00
-}
-Response Codes:
-200 OK: Wallet successfully created.
-400 Bad Request: Invalid or missing data.
-500 Internal Server Error: Error during account creation.
-6.2 List Wallets (GET /api/wallet)
-Description: Returns a list of wallets, optionally filtered by currency or user document.
+---
 
-6.3 Transfer (POST /api/transactions/transfer)
-Description: Processes a transfer between two wallets with balance and currency validations.
-Request Body:
-{
-  "sourceWalletId": 1,
-  "targetWalletId": 2,
-  "amount": 50.00
-}
-Response Codes:
-200 OK: Transfer successfully completed.
-400 Bad Request: Insufficient balance or different currencies.
-404 Not Found: One or both wallets not found.
-6.4 Get Transactions (GET /api/transactions/{walletId})
-Description: Retrieves the transactions associated with a specific wallet.
+## 4. Design Patterns
 
-7. Validations 
-Minimum Balance: The transfer amount must be greater than 0.
-Currency: Transfers can only occur between wallets with the same currency.
-User Document: User document is required and limited to 50 characters.
-Existing Account: Throws an error if the user already has a wallet in the same currency.
+The project uses the following design patterns:
+- **Repository Pattern:** For data access and database operations.
+- **Service Layer Pattern:** To encapsulate business logic and orchestrate interactions between repositories and controllers.
+- **Dependency Injection:** For injecting services and repositories into controllers and other components.
+- **DTOs (Data Transfer Objects):** To transfer data between layers without exposing domain entities directly.
 
-9. Unit and Integration Tests
-Tests Performed:
-Unit Tests:
-TransactionControllerTests.cs: Tests for creating transfers and error handling.
-WalletControllerTests.cs: Tests for creating wallets and data validation.
-Integration Tests: Simulates full API flows using an in-memory database.
-WalletIntegrationTests.cs: Tests for creating accounts and transferring funds.
+---
 
-Test Coverage:
-Coverage Results:
-Module	Line	Branch	Method
-Kata.Wallet.Api	70.22%	58.33%	87.5%
-Kata.Wallet.Database	100%	100%	100%
-Kata.Wallet.Domain	76.92%	100%	76.92%
-Kata.Wallet.Dtos	55%	0%	78.57%
-Kata.Wallet.Persistence	0%	0%	0%
-Kata.Wallet.Services	87.87%	70.83%	85.71%
-Total	64.5%	50%	69.64%
-Average	65%	54.85%	71.45%
+## 5. Data Flow
 
-10. Technologies Used 
-ASP.NET Core 6: Framework used for building the API.
-Entity Framework Core: ORM used for database interaction.
-xUnit: Testing framework for unit and integration tests.
-AutoMapper: Used for mapping entities to DTOs.
-InMemoryDatabase: For integration testing without a real database.
-Swagger: Used for interactive API documentation.
+The flow of data through the system is as follows:
 
-12. Future Improvements
-Potential future improvements include:
-Authentication and Authorization: Add JWT-based authentication to protect endpoints.
-Query Optimization: Implement caching to improve performance for fetching wallets and transactions.
-Advanced Validations: Implement fraud detection and country-specific restrictions.
-Extended Swagger Documentation: Add more detailed Swagger documentation for better API clarity.
+1. **API Request:** A request is made to an endpoint (e.g., create a wallet or make a transfer).
+2. **Controller Layer:** The controller processes the request and calls the appropriate service.
+3. **Service Layer:** The service validates the request, performs business logic, and interacts with repositories for data access.
+4. **Repository Layer:** The repository accesses the database (or in-memory database for testing) to perform CRUD operations.
+5. **Response:** The service returns the result to the controller, which then sends the response back to the client.
+
+---
+
+## 6. API Endpoints
+
+### Create Wallet
+**POST /api/wallet**
+
+This endpoint creates a new wallet.
+
+### List Wallets
+**GET /api/wallet**
+
+This endpoint retrieves a list of wallets with optional filters for currency and user document.
+
+### Transfer
+**POST /api/transaction/transfer**
+
+This endpoint processes a wallet-to-wallet transfer.
+
+### Get Transactions
+**GET /api/transaction/{walletId}/transactions**
+
+This endpoint retrieves transaction history for a specific wallet.
+
+---
+
+## 7. Validations
+
+The API implements the following validations:
+- **Balance Validation:** Ensures that transfers are only processed if the source wallet has sufficient balance.
+- **Currency Validation:** Transfers are only allowed between wallets that share the same currency.
+- **Amount Validation:** Transfers must have a positive amount greater than zero.
+
+---
+
+## 8. Unit and Integration Tests
+
+The project includes both unit tests and integration tests to ensure the correctness of the API:
+
+- **Unit Tests:** Test individual components such as services and repositories in isolation.
+- **Integration Tests:** Test the interaction between multiple components (e.g., controllers, services, repositories).
+
+---
+
+## 9. Test Coverage
+
+Coverage results for the project:
+
+| Module                  | Line   | Branch | Method |
+|-------------------------|--------|--------|--------|
+| Kata.Wallet.Api         | 70.22% | 58.33% | 87.5%  |
+| Kata.Wallet.Database    | 100%   | 100%   | 100%   |
+| Kata.Wallet.Domain      | 76.92% | 100%   | 76.92% |
+| Kata.Wallet.Dtos        | 55%    | 0%     | 78.57% |
+| Kata.Wallet.Persistence | 0%     | 0%     | 0%     |
+| Kata.Wallet.Services    | 87.87% | 70.83% | 85.71% |
+| **Total**               | 64.5%  | 50%    | 69.64% |
+
+---
+
+## 10. Technologies Used
+
+- **ASP.NET Core 6.0:** For building the RESTful API.
+- **Entity Framework Core:** For data access and ORM.
+- **AutoMapper:** For mapping between entities and DTOs.
+- **xUnit:** For unit and integration testing.
+- **Coverlet:** For measuring code coverage.
+- **Swagger:** For API documentation and testing.
+
+---
+
+## 11. Future Improvements
+
+Possible future improvements to the Wallet API:
+- **Logging Enhancements:** Integrate more advanced logging mechanisms for better traceability.
+- **Additional Validations:** Add more robust input validations, such as checking for duplicate wallets.
+- **Optimizations:** Refactor services for improved performance in high-volume environments.
+- **Authentication and Authorization:** Implement user authentication and role-based access control.
